@@ -43,20 +43,22 @@
 //     });
 // ----------------------------------------------------------------
 
-let a = new Promise((resolve,reject)=>{
-    reject("FAILED");
-})
-let b = new Promise((resolve,reject)=>{
-    reject("FAILED");
-})
-let c = new Promise((resolve,reject)=>{
-    setTimeout(()=> resolve("SUCCESS"),3000);
-})
-let d = new Promise((resolve,reject)=>{
-    setTimeout(()=> resolve("GAINED"),1000);
-})
-let e = new Promise((resolve,reject)=>{
-    reject("FAILED");
-})
-let x =[a,b,c,d,e];
-Promise.any(x).then((val)=>console.log(val));
+// let a = new Promise((resolve,reject)=>{
+//     reject("FAILED");
+// })
+// let b = new Promise((resolve,reject)=>{
+//     reject("FAILED");
+// })
+// let c = new Promise((resolve,reject)=>{
+//     setTimeout(()=> resolve("SUCCESS"),3000);
+// })
+// let d = new Promise((resolve,reject)=>{
+//     setTimeout(()=> resolve("GAINED"),1000);
+// })
+// let e = new Promise((resolve,reject)=>{
+//     reject("FAILED");
+// })
+// let x =[a,b,c,d,e];
+// Promise.any(x).then((val)=>console.log(val));
+// ------------------------------------------------------------------------------
+

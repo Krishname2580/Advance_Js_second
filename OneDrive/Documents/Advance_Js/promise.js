@@ -50,3 +50,66 @@
 
 // -------------------------------------------------------------------------------
 
+// let myVal = new Promise((resolve,reject)=>{
+//     let random = Math.random();
+
+//     if(random>0.5){
+//         resolve("Success!");
+//     } else{
+//         reject("Error!");
+//     }
+// });
+// myVal.then((msg)=>console.log(msg)).catch((error)=>console.log(error));
+// -------------------------------------------------------------------------------------------
+
+// new Promise((resolve, reject) => {
+//     resolve(5);               
+// })
+// .then(num => {
+//     return num * 2;
+// })
+// .then(num => {
+//     return num + 10; 
+// })
+// .then(finalValue => {
+//     console.log(finalValue);
+// });
+// ------------------------------------------------------------------------------------------
+
+// let a = new Promise(resolve => {
+//     setTimeout(() => resolve("Hii!"), 1000);
+// });
+// let b = new Promise(resolve => {
+//     setTimeout(() => resolve("Hello!"), 2000);
+// });
+// let c = new Promise(resolve => {
+//     setTimeout(() => resolve("Bye"), 3000);
+// });
+
+// a.then((result)=>console.log(result));
+// Promise.all([a,b,c]).then((results) => console.log(results));
+// -----------------------------------------------------------------------------------------------
+
+// function readFile(filename) {
+//   return new Promise((resolve, reject) => {
+//     if (!filename) {
+//         reject("Filename is empty!");
+//         return;
+//         }
+//     setTimeout(() => {
+//         resolve(filename);
+//         }, 2000);
+//     });
+//     }
+// readFile("data.txt").then(msg => console.log(msg)).catch(err => console.log(err));
+
+// readFile("").then(msg => console.log(msg)).catch(err => console.log(err));
+// ------------------------------------------------------------------------------------------------
+
+// let a=new Promise((reject)=>{
+//     setTimeout(()=>{
+//         reject("Requested time out");
+//     },3000);
+// });
+// a.then((result)=> console.log(result)).catch((error)=>console.log(error));
+// --------------------------------------------------------------------------------------------------
