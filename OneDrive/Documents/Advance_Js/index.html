@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div>
+        <input id="Name" type="text" placeholder="enter your name" />
+        <button onclick="Add()">Add data</button>
+        <button onclick="deleteValue()">Delete</button>
+        <h2 id="show"></h2>
+    </div>
+    <script>
+
+        function Add() {
+            let a = document.getElementById('Name').value
+            localStorage.setItem("name", a)
+            show()
+        }
+
+        function show() {
+
+            let dataShow = document.getElementById("show")
+            let c = localStorage.getItem('name') || ""
+            dataShow.innerHTML = c
+
+        }
+
+        window.onload = function () {
+            show()
+        }
+        function deleteValue() {
+            let b = localStorage.removeItem('name')
+            let c = document.getElementById("show").innerHTML = ""
+        }
+    
+    </script>
+<!-- <script src="practice.js"></script> -->
+</body>
+
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Products with Details</title>
+</head>
+
+<body>
+    <h2>Products</h2>
+    <ul id="productList"></ul>
+
+    <script>
+        async function fetchProducts() {
+            try {
+                const response = await fetch("https://dummyjson.com/products");
+
+                if (!response.ok) throw new Error("Network error");
+
+                const data = await response.json();
+                const productList = document.getElementById("productList");
+
+                data.products.slice(0, 15).forEach(product => {
+                    const li = document.createElement("li");
+
+                    li.innerHTML = `
+                        ${product.id} - ${product.title} - ₹${product.price}
+                        <button onclick="viewDetails(${product.id})">View Details</button>`;
+
+                    productList.appendChild(li);
+                });
+
+            } catch (error) {
+                console.error(error);
+                productList.innerHTML ='<li style="color:red">Failed to load products</li>';
+            }
+        }
+
+        async function viewDetails(productId) {
+            try {
+                const response = await fetch(`https://dummyjson.com/products/${productId}`);
+
+                const product = await response.json();
+
+                alert(`
+Title: ${product.title}
+Price: ₹${product.price}
+Brand: ${product.brand}
+Category: ${product.category}
+Description: ${product.description}
+                `);
+
+            } catch (error) {
+                alert("Failed to load product details");
+            }
+        }
+
+        window.addEventListener("DOMContentLoaded", fetchProducts);
+    </script>
+</body>
+
+<!-- </html>
+<div>
+    <h2>Data</h2>
+</div> -->

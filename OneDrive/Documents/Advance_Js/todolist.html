@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo List</title>
+</head>
+
+<body>
+    <form action="">
+        <table border="1" cellpadding="8" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>Task</th>
+                    <th>Name</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+
+    </form>
+    <input id="task" type="text" placeholder="enter your name" />
+    <input id="name" type="text" placeholder="enter your name" />
+
+    <button onclick="Add()">Add data</button>
+    <div id="show"></div>
+
+</body>
+<script>
+
+    function Add() {
+        let a = document.getElementById('task').value
+        let d = document.getElementById('name').value
+
+        let b = JSON.parse(localStorage.getItem("tasks")) || [];
+        b.push({ a, d })
+        localStorage.setItem("tasks", JSON.stringify(b));
+
+        show()
+    }
+
+
+    function show() {
+
+        let tableBody = document.getElementById("tableBody")
+        let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+        tableBody.innerHTML = "";
+
+        tasks.length > 0
+            ? tasks.forEach((item, index) => {
+                const row = document.createElement("tr");
+
+                row.innerHTML = `
+            <tr>
+                    
+                    <td>${item.a}</td>
+                    <td>${item.d}</td>
+                    <td>
+                        <button onclick="deleteRow(${index})">Delete</button>
+                        
+                    </td>
+                    
+                </tr>
+            `;
+                tableBody.appendChild(row)
+            })
+            : tableBody.innerHTML = `
+        <tr>
+            <td colspan="2" style="text-align:center;">No Data Found</td>
+        </tr>
+        `
+
+
+    }
+    function deleteRow(index) {
+        let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+        let newTasks = tasks.filter((item, i) => i !== index);
+
+        localStorage.setItem("tasks", JSON.stringify(newTasks));
+        show();
+    }
+
+    window.onload = function () {
+        show()
+    }
+</script>
+
+</html>
