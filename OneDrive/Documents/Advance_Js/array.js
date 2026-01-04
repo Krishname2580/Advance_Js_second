@@ -11,12 +11,12 @@
 // // console.log(e);
 // // console.log(f);
 
-// // let a = [1,2,3,4,5];
-// // // let b = a.splice(2,2);
-// // // console.log(a);
-// // let c = a.splice(2,0,10,11);
+// let a = [1,2,3,4,5];
+// // let b = a.splice(2,2);
 // // console.log(a);
-// -----------------------------------------------------------
+// let c = a.splice(2,0,10,11);
+// console.log(a);
+// // -----------------------------------------------------------
 
 // // let a = [1,2,3,4,5,6,7,8];
 // // let b = a.filter(function(item){
@@ -39,7 +39,7 @@
 // // })
 // // console.log(b);
 // -----------------------------------------------------------
-
+// Repeation delete
 
 // let a = [1,1,2,2,3,4,5];
 // let b = [];
@@ -96,4 +96,4 @@
 
 // console.log(Math.floor((Math.random())*5)+1);
 
-console.log(Math.floor(Math.random()*(10-6+1)+6));
+// console.log(Math.floor(Math.random()*(10-6+1)+6));

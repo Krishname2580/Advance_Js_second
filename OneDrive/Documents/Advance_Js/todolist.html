@@ -5,64 +5,164 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Todo List</title>
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* horizontal center */
+            text-align: center;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        table {
+            margin: 0 auto;
+            border-collapse: collapse;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+            width: 300px;
+            padding: 20px;
+            border-radius: 6px;
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            cursor: pointer;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        h2.cng {
+            padding-top: 50px;
+        }
+    </style>
+
 </head>
 
 <body>
+    <!-- Button -->
+     <h2 class="cng">Create Your Movie List:-</h2>
+    <div class="controls">
+        <input id="task" type="text" placeholder="Movie Name" />
+        <input id="name" type="text" placeholder="Amount" />
+        <input id="search" type="search" placeholder="Search movie or price" />
+        <button type="button" onclick="searchMenu()">Search</button>
+        <button onclick="Add()">Add Name</button>
+    </div>
+
+
+    <!-- Modal -->
+    <div id="viewModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h3>Movie Details:- </h3>
+            <p><strong>Movie Name:</strong> <span id="viewMovie"></span></p>
+            <p><strong>Ticket Price:</strong> ₹<span id="viewPrice"></span></p>
+        </div>
+    </div>
+
+    <!-- Table List -->
     <form action="">
-        <table border="1" cellpadding="8" cellspacing="0">
+        <h2 id="table">Available Movies:-</h2>
+        <table border="2" cellpadding="12" cellspacing="0">
             <thead>
                 <tr>
-                    <th>Task</th>
-                    <th>Name</th>
+                    <th>#</th>
+                    <th>Movie Name</th>
+                    <th>Ticket Price(₹)</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody id="tableBody"></tbody>
         </table>
-
     </form>
-    <input id="task" type="text" placeholder="enter your name" />
-    <input id="name" type="text" placeholder="enter your name" />
 
-    <button onclick="Add()">Add data</button>
-    <div id="show"></div>
+
 
 </body>
 <script>
+    let editIndex = null;
+    let searchInput = null;
+    document.addEventListener("DOMContentLoaded", () => show());
 
     function Add() {
         let a = document.getElementById('task').value
         let d = document.getElementById('name').value
 
         let b = JSON.parse(localStorage.getItem("tasks")) || [];
+        if (editIndex !== null) {
+            b[editIndex] = { a, d };
+            localStorage.setItem("tasks", JSON.stringify(b));
+            editIndex = null;
+            show();
+            return;
+        }
+        let c = b.filter((item) => item.a == a);
+        if (c.length > 0) {
+            alert("Dublicate value not accept");
+            return;
+        }
         b.push({ a, d })
         localStorage.setItem("tasks", JSON.stringify(b));
 
-        show()
+        show();
+        document.getElementById("task").value = "";
+        document.getElementById("name").value = "";
+        document.getElementById("search").value = "";
+        document.getElementById("show").innerHTML = "";
+
     }
 
 
-    function show() {
+
+    function show(data = null) {
 
         let tableBody = document.getElementById("tableBody")
-        let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+        let tasks = data || JSON.parse(localStorage.getItem("tasks")) || [];
         tableBody.innerHTML = "";
 
         tasks.length > 0
             ? tasks.forEach((item, index) => {
-                const row = document.createElement("tr");
+                const realIndex = item.originalIndex ?? index;
 
+                const row = document.createElement("tr");
                 row.innerHTML = `
-            <tr>
-                    
-                    <td>${item.a}</td>
-                    <td>${item.d}</td>
-                    <td>
-                        <button onclick="deleteRow(${index})">Delete</button>
-                        
-                    </td>
-                    
-                </tr>
+                <td>${index + 1}</td>
+                <td>${item.a}</td>
+                <td>₹ ${item.d}</td>
+                <td>
+                    <button type="button" onclick="viewRow(${realIndex})">View</button>
+                    <button type="button" onclick="editRow(${realIndex})">Edit</button>
+                    <button type="button" onclick="deleteRow(${realIndex})">Delete</button>
+                </td>   
             `;
                 tableBody.appendChild(row)
             })
@@ -71,16 +171,52 @@
             <td colspan="2" style="text-align:center;">No Data Found</td>
         </tr>
         `
+    }
+    function viewRow(index) {
+        let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+        if (!tasks[index]) {
+            alert("Data not found");
+            return;
+        }
+        let task = tasks[index];
+        document.getElementById("viewMovie").textContent = task.a;
+        document.getElementById("viewPrice").textContent = task.d;
 
+        document.getElementById("viewModal").style.display = "block";
+    }
+
+    function closeModal() {
+        document.getElementById("viewModal").style.display = "none";
+    }
+
+    function editRow(index) {
+        let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+        editIndex = index;
+        document.getElementById("task").value = tasks[index]?.a;
+        document.getElementById("name").value = tasks[index]?.d;
 
     }
+
     function deleteRow(index) {
         let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-
         let newTasks = tasks.filter((item, i) => i !== index);
 
         localStorage.setItem("tasks", JSON.stringify(newTasks));
         show();
+        document.getElementById("show").innerHTML = "";
+
+    }
+
+
+    function searchMenu() {
+        let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+        let search = document.getElementById("search").value.trim().toLowerCase();
+        if (!search) {
+            show();
+            return;
+        }
+        let filtered = tasks.map((item, index) => ({ ...item, originalIndex: index })).filter(item => item.a.toLowerCase().includes(search) || item.d.toLowerCase().includes(search));
+        show(filtered);
     }
 
     window.onload = function () {

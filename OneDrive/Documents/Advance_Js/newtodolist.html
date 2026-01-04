@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Menu Table with LocalStorage</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    th,
+    td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    button {
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-content {
+      background-color: white;
+      margin: 10% auto;
+      padding: 20px;
+      border-radius: 10px;
+      width: 300px;
+      text-align: center;
+    }
+
+    .close {
+      color: red;
+      float: right;
+      font-size: 20px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <h2>Add Menu Item</h2>
+
+  <input type="text" id="name" placeholder="Menu Name" />
+  <input type="number" id="price" placeholder="Price" />
+  <input type="text" id="search" placeholder="Search menu" />
+  <button type="button" id="addBtn">Save</button>
+
+  <h3>Saved Items</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Menu Name</th>
+        <th>Price (₹)</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="menuBody"></tbody>
+  </table>
+
+  <!-- Modal -->
+  <div id="detailsModal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="closeModal">&times;</span>
+      <h3>Menu Details</h3>
+      <p id="detailName"></p>
+      <p id="detailPrice"></p>
+    </div>
+  </div>
+
+  <script>
+    const menuBody = document.getElementById("menuBody");
+    const nameInput = document.getElementById("name");
+    const priceInput = document.getElementById("price");
+    const searchInput = document.getElementById("search");
+    const addBtn = document.getElementById("addBtn");
+
+    const modal = document.getElementById("detailsModal");
+    const closeModal = document.getElementById("closeModal");
+    const detailName = document.getElementById("detailName");
+    const detailPrice = document.getElementById("detailPrice");
+
+    let editIndex = null;
+    let currentFiltered = null; // 🔹 Save filtered array
+
+    // Load menus on start
+    document.addEventListener("DOMContentLoaded", () => loadMenus());
+
+    // Add or edit menu
+    addBtn.addEventListener("click", () => {
+      const name = nameInput.value.trim();
+      const price = priceInput.value.trim();
+      if (!name || !price) return;
+
+      let menus = JSON.parse(localStorage.getItem("menus")) || [];
+
+      if (editIndex !== null) {
+        menus[editIndex] = { name, price };
+        editIndex = null;
+      } else {
+        if (menus.some(m => m.name.toLowerCase() === name.toLowerCase())) {
+          alert("Duplicate value not allowed");
+          return;
+        }
+        menus.push({ name, price });
+      }
+
+      localStorage.setItem("menus", JSON.stringify(menus));
+      nameInput.value = "";
+      priceInput.value = "";
+      searchInput.value = "";
+      currentFiltered = null;
+      loadMenus();
+    });
+
+    function loadMenus(filtered = null) {
+      const fullData = JSON.parse(localStorage.getItem("menus")) || [];
+      let menus = filtered ? filtered.map(item => ({
+        ...item,
+        originalIndex: item.originalIndex
+      })) : fullData.map((item, index) => ({ ...item, originalIndex: index }));
+
+      currentFiltered = filtered || null;
+
+      menuBody.innerHTML = "";
+      if (menus.length === 0) {
+        menuBody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No Data Found</td></tr>`;
+        return;
+      }
+
+      menus.forEach((menu, idx) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+      <td>${idx + 1}</td>
+      <td>${menu.name}</td>
+      <td>₹${menu.price}</td>
+      <td>
+        <button data-index="${menu.originalIndex}" class="viewBtn">View</button>
+        <button data-index="${menu.originalIndex}" class="editBtn">Edit</button>
+        <button data-index="${menu.originalIndex}" class="deleteBtn">Delete</button>
+      </td>
+    `;
+        menuBody.appendChild(tr);
+      });
+    }
+
+    // Event delegation for buttons
+    menuBody.addEventListener("click", e => {
+      const index = parseInt(e.target.dataset.index);
+      if (e.target.classList.contains("deleteBtn")) {
+        let menus = JSON.parse(localStorage.getItem("menus")) || [];
+        menus.splice(index, 1);
+        localStorage.setItem("menus", JSON.stringify(menus));
+        loadMenus(currentFiltered);
+      }
+
+      if (e.target.classList.contains("editBtn")) {
+        let menus = JSON.parse(localStorage.getItem("menus")) || [];
+        nameInput.value = `menus[index].name`;
+        priceInput.value = `menus[index].price`;
+        editIndex = index;
+      }
+
+      if (e.target.classList.contains("viewBtn")) {
+        let menus = JSON.parse(localStorage.getItem("menus")) || [];
+        const menu = menus[index];
+        detailName.textContent = `Name: ${menu.name}`;
+        detailPrice.textContent = `Price: ₹${menu.price}`;
+        modal.style.display = "block";
+      }
+    });
+
+
+    closeModal.onclick = () => modal.style.display = "none";
+    window.onclick = (e) => { if (e.target === modal) modal.style.display = "none"; }
+
+    // Search menu
+    searchInput.addEventListener("input", () => {
+      const q = searchInput.value.trim().toLowerCase();
+      const fullData = JSON.parse(localStorage.getItem("menus")) || [];
+      if (q) {
+        const filtered = fullData
+          .map((m, idx) => ({ ...m, originalIndex: idx }))
+          .filter(m => m.name.toLowerCase().includes(q));
+        loadMenus(filtered);
+      } else {
+        currentFiltered = null;
+        loadMenus();
+      }
+    });
+  </script>
+</body>
+
+</html>
