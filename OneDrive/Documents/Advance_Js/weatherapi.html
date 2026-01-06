@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Weather Forecast</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            margin: 0;
+            background-image: url("https://images.unsplash.com/photo-1767327837583-f5a5daafeb13?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NTF8fG5hdHVyZSUyMHdlYXRoZXJ8ZW58MHx8MHx8fDA%3D");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            width: 85%;
+            padding: 10px 40px 10px 12px;
+            border-radius: 12px;
+            border: none;
+            outline: none;
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .search-box i {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-70%);
+            color: #333;
+            cursor: pointer;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+        }
+
+        .weather-card {
+            width: 350px;
+            height: 500px;
+            background: rgba(255, 255, 255, 0.35);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px;
+            color: #000;
+        }
+
+        .main-weather {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+
+        .main-weather img {
+            width: 80px;
+        }
+
+        .temp {
+            font-size: 36px;
+            font-weight: bold;
+        }
+
+
+        .city-date {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        #city {
+            padding-left: 8px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            gap: 8px;
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 18px;
+            padding-bottom: 20px;
+        }
+
+        .logo img {
+            width: 95px;
+            height: 95px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            border-radius: 8px;
+            border: none;
+            margin-bottom: 10px;
+        }
+
+        .temp {
+            font-size: 36px;
+            font-weight: bold;
+        }
+
+        .details {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+            text-align: center;
+            font-size: 13px;
+            padding-bottom: 35px;
+        }
+
+        .details i {
+            font-size: 18px;
+            margin-bottom: 4px;
+            color: #000;
+        }
+
+
+        .forecast {
+            display: flex;
+            gap: 8px;
+            margin-top: 15px;
+            overflow-x: auto;
+            padding-bottom: 18px;
+        }
+
+        .forecast::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .forecast::-webkit-scrollbar-thumb {
+            background: rgba(88, 69, 69, 0.756);
+            border-radius: 10px;
+        }
+
+        .forecast::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .day {
+            min-width: 70px;
+            background: rgba(255, 255, 255, 0.35);
+            padding: 10px;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 13px;
+            width: 70px;
+        }
+
+
+        img {
+            width: 45px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="weather-card">
+
+        <div class="search-box">
+            <input id="cityInput" placeholder="Enter City Name" />
+            <i class="fa-solid fa-magnifying-glass" id="searchBtn"></i></i>
+        </div>
+
+
+        <div class="city-date">
+            <div class="city-name">
+                <i class="fa-solid fa-location-dot"></i>
+                <b id="city">Kolkata</b>
+            </div>
+
+
+            <div id="date"></div>
+        </div>
+
+        <div class="logo">
+            <img id="mainIcon"
+                src="https://static.vecteezy.com/system/resources/previews/024/825/180/non_2x/3d-weather-icon-day-free-png.png"
+                alt="Weather Logo">
+
+            <div class="main-weather">
+                <div>
+                    <div class="temp" id="temp">-- °C</div>
+                    <p id="desc">---</p>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="details">
+            <div>
+                <i class="fa-solid fa-droplet"></i><br>
+                Humidity<br>
+                <b id="humidity"></b>
+            </div>
+
+            <div>
+                <i class="fa-solid fa-wind"></i><br>
+                Wind Speed<br>
+                <b id="wind"></b>
+            </div>
+
+            <div>
+                <i class="fa-solid fa-eye"></i><br>
+                Visibility<br>
+                <b id="visibility"></b>
+            </div>
+
+            <div>
+                <i class="fa-solid fa-temperature-half"></i><br>
+                Feels Like<br>
+                <b id="feels"></b>
+            </div>
+
+            <div>
+                <i class="fa-solid fa-water"></i><br>
+                Pressure<br>
+                <b id="pressure"></b>
+            </div>
+
+            <div>
+                <i class="fa-solid fa-fire"></i><br>
+                Max Feels<br>
+                <b id="max"></b>
+            </div>
+        </div>
+
+
+
+        <div class="forecast" id="forecast"></div>
+    </div>
+
+    <script>
+        const API_KEY = "724b85bf70dbed73d7149de5e036921a";
+
+
+        document.getElementById("cityInput").addEventListener("keyup", e => {
+            if (e.key === "Enter") getWeather(e.target.value);
+        });
+        document.getElementById("date").innerText =
+            new Date().toDateString();
+        document.getElementById("searchBtn").addEventListener("click", () => {
+            const input = document.getElementById("cityInput");
+            const city = input.value.trim();
+
+            if (city !== "") {
+                getWeather(city);
+                input.value = "";
+            }
+        });
+
+
+
+
+        async function getWeather(city) {
+            try {
+                const url = `https://api.openweathermap.org/data/2.5/forecast?q=${city},IN&units=metric&appid=${API_KEY}`;
+                const res = await fetch(url);
+                const data = await res.json();
+
+                if (data.cod !== "200") {
+                    alert("City not found or API error");
+                    return;
+                }
+
+                const current = data.list[0];
+                document.getElementById("desc").innerText =
+                    current.weather[0].description;
+                const iconCode = current.weather[0].icon;
+                document.getElementById("mainIcon").src = getCustomIcon(iconCode);
+
+
+                document.getElementById("city").innerText =
+                    data.city.name + ", " + data.city.country;
+
+                document.getElementById("temp").innerText =
+                    Math.round(current.main.temp) + " °C";
+
+                document.getElementById("humidity").innerText =
+                    current.main.humidity + "%";
+
+                document.getElementById("wind").innerText =
+                    current.wind.speed + " km/h";
+
+                document.getElementById("visibility").innerText =
+                    (current.visibility / 1000) + " km";
+
+                document.getElementById("feels").innerText =
+                    Math.round(current.main.feels_like) + " °C";
+
+                document.getElementById("pressure").innerText =
+                    current.main.pressure + " hpa";
+
+                document.getElementById("max").innerText =
+                    Math.round(current.main.temp_max) + " °C";
+
+                showForecast(data.list);
+
+            } catch (err) {
+                console.error(err);
+                alert("Error loading weather data");
+            }
+        }
+
+
+        function showForecast(list) {
+            const forecastDiv = document.getElementById("forecast");
+            forecastDiv.innerHTML = "";
+
+            // Pick one forecast per day (12:00 PM)
+            const daily = list.filter(item => item.dt_txt.includes("12:00:00"));
+
+            daily.slice(0, 7).forEach(day => {
+                forecastDiv.innerHTML += `
+            <div class="day">
+                ${new Date(day.dt_txt).toLocaleDateString("en-US", { weekday: "short" })}<br>
+                <img src="${getCustomIcon(day.weather[0].icon)}" class="forecast-icon"><br>
+                ${Math.round(day.main.temp)} °C
+            </div>
+        `;
+            });
+        }
+        window.onload = () => {
+            getWeather("Kolkata");
+        };
+        function getCustomIcon(code) {
+            if (code.includes("01")) return "https://static.vecteezy.com/system/resources/previews/024/825/180/non_2x/3d-weather-icon-day-free-png.png";
+            if (code.includes("02")) return "https://cdn-icons-png.flaticon.com/512/11166/11166805.png";
+            if (code.includes("03") || code.includes("04")) return "https://cdn-icons-png.flaticon.com/512/5497/5497055.png";
+            if (code.includes("09") || code.includes("10")) return "https://png.pngtree.com/png-clipart/20201201/ourmid/pngtree-cute-minimalist-blue-white-rain-clipart-decoration-png-image_2484005.jpg";
+            if (code.includes("11")) return "https://png.pngtree.com/png-vector/20250516/ourlarge/pngtree-realistic-storm-cloud-isolated-png-image_16303638.png";
+            if (code.includes("13")) return "https://cdn-icons-png.flaticon.com/512/7334/7334205.png";
+            return "https://cdn-icons-png.flaticon.com/512/4834/4834559.png";
+        }
+
+
+    </script>
+
+</body>
+
+</html>

@@ -6,62 +6,186 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Todo List</title>
     <style>
+        * {
+            box-sizing: border-box;
+            font-family: "Segoe UI", sans-serif;
+        }
+
         body {
             margin: 0;
             min-height: 100vh;
+            background:
+                linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)),
+                url("https://images.unsplash.com/photo-1604975701397-6365ccbd028a?q=80&w=735&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+            background-size: cover;
+            background-position: center;
             display: flex;
             flex-direction: column;
             align-items: center;
-            /* horizontal center */
-            text-align: center;
+            color: #fff;
         }
 
+        /* Glass container */
+        .controls,
+        form {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 15px 0;
+            width: 90%;
+            max-width: 900px;
+        }
+
+        /* Headings */
+        h2 {
+            margin-top: 40px;
+            margin-bottom: 10px;
+            text-align: left;
+            width: 90%;
+            max-width: 900px;
+        }
+
+        /* Input & buttons */
         .controls {
             display: flex;
             gap: 10px;
-            margin: 15px 0;
             flex-wrap: wrap;
-            justify-content: center;
         }
 
+        input,
+        button {
+            padding: 10px 12px;
+            border-radius: 6px;
+            border: none;
+            outline: none;
+            font-size: 14px;
+        }
+
+        input {
+            flex: 1;
+        }
+
+        button {
+            background: #0d6efd;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        /* Table */
         table {
-            margin: 0 auto;
+            width: 100%;
             border-collapse: collapse;
+            margin-top: 10px;
+            color: #fff;
         }
 
+        thead {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: center;
+        }
+
+        tbody tr {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        tbody tr:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Action buttons */
+        td button {
+            margin: 2px;
+            padding: 6px 10px;
+            font-size: 13px;
+            border-radius: 5px;
+        }
+
+        td button:nth-child(1) {
+            background: #198754;
+            /* View */
+        }
+
+        td button:nth-child(2) {
+            background: #0dcaf0;
+            /* Edit */
+            color: #000;
+        }
+
+        td button:nth-child(3) {
+            background: #dc3545;
+            /* Delete */
+        }
+
+        /* MODAL BACKGROUND */
         .modal {
             display: none;
             position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-        }
-
-        .modal-content {
-            display: none;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
             align-items: center;
             justify-content: center;
-            background: #fff;
-            width: 300px;
+            z-index: 1000;
+        }
+
+        /* POPUP BOX */
+        .modal-box {
+            background: #0d4871;
             padding: 20px;
-            border-radius: 6px;
-            position: relative;
+            width: 350px;
+            border-radius: 8px;
+            color: #fff;
         }
 
-        .close {
-            position: absolute;
-            top: 8px;
-            right: 12px;
+        /* HEADER */
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-btn {
             cursor: pointer;
-            font-size: 22px;
-            font-weight: bold;
+            font-size: 18px;
         }
 
-        h2.cng {
-            padding-top: 50px;
+        /* BODY */
+        .modal-body {
+            margin-top: 15px;
+        }
+
+        .modal-body label {
+            display: block;
+            margin-top: 10px;
+        }
+
+        .modal-body input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border-radius: 4px;
+            border: none;
+        }
+
+        /* CLOSE BUTTON */
+        .close-main {
+            margin-top: 15px;
+            width: 100%;
+            background: rgb(201, 20, 20);
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
     </style>
 
@@ -69,7 +193,7 @@
 
 <body>
     <!-- Button -->
-     <h2 class="cng">Create Your Movie List:-</h2>
+    <h2 class="cng">Create Your Movie List:-</h2>
     <div class="controls">
         <input id="task" type="text" placeholder="Movie Name" />
         <input id="name" type="text" placeholder="Amount" />
@@ -79,15 +203,26 @@
     </div>
 
 
-    <!-- Modal -->
-    <div id="viewModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <h3>Movie Details:- </h3>
-            <p><strong>Movie Name:</strong> <span id="viewMovie"></span></p>
-            <p><strong>Ticket Price:</strong> ₹<span id="viewPrice"></span></p>
+    <!-- VIEW MODAL -->
+    <div class="modal" id="viewModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2>Movie Details </h2>
+                <span class="close-btn" onclick="closeModal()">✖</span>
+            </div>
+
+            <div class="modal-body">
+                <label>Movie Name:</label>
+                <input type="text" id="viewName" readonly />
+
+                <label>Ticket Price (₹):</label>
+                <input type="text" id="viewPrice" readonly />
+            </div>
+
+            <button class="close-main" onclick="closeModal()">Close</button>
         </div>
     </div>
+
 
     <!-- Table List -->
     <form action="">
@@ -174,20 +309,26 @@
     }
     function viewRow(index) {
         let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
         if (!tasks[index]) {
             alert("Data not found");
             return;
         }
+
         let task = tasks[index];
-        document.getElementById("viewMovie").textContent = task.a;
-        document.getElementById("viewPrice").textContent = task.d;
 
-        document.getElementById("viewModal").style.display = "block";
+        // Set modal values
+        document.getElementById("viewName").value = task.a;
+        document.getElementById("viewPrice").value = task.d;
+
+        // Show modal
+        document.getElementById("viewModal").style.display = "flex";
     }
-
     function closeModal() {
         document.getElementById("viewModal").style.display = "none";
     }
+
+
 
     function editRow(index) {
         let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
